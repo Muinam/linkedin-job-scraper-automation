@@ -35,7 +35,7 @@ Every time you run this system, it:
 ---
 
 
-![Project Image](Screenshot2026-04-01142908.png)
+![Project Image](Linkein-scaper)
 
 
 ## Project Structure
