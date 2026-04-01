@@ -77,7 +77,6 @@ linkedin-scraper/
 Automatically detects from job title — no LinkedIn API needed:
 
 | Level | Keywords Detected |
-
 |-------|------------------|
 | Intern | intern, internship, trainee |
 | Entry Level | junior, entry, associate, graduate, fresh |
@@ -239,7 +238,6 @@ http://127.0.0.1:8000
 ## API Endpoints
 
 | Method | Endpoint | Description |
-
 |--------|----------|-------------|
 | GET | `/` | Web frontend |
 | POST | `/scrape` | Trigger scraping task |
@@ -293,7 +291,6 @@ Each email contains:
 - Direct Apply link
 
 | Badge Color | Level |
-
 |-------------|-------|
 | Purple | Intern |
 | Blue | Entry Level |
@@ -323,7 +320,6 @@ Level column is **color-coded** automatically:
 ## Performance
 
 | Metric | Value |
-
 |--------|-------|
 | Jobs per keyword | ~1,000–1,400 |
 | Scrape time (1 keyword) | ~2.5 minutes |
