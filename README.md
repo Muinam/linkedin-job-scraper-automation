@@ -35,7 +35,7 @@ Every time you run this system, it:
 ---
 
 
-![Project Image](image.png)
+![Project Image](Screenshot 2026-04-01 142908.png)
 
 
 ## Project Structure
