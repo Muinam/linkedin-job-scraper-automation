@@ -1,0 +1,462 @@
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LinkedIn Job Scraper</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Segoe UI', sans-serif; background: #f0f4f8; min-height: 100vh; display: flex; align-items: center; justify-content: center; }
+  .container { background: white; border-radius: 16px; padding: 40px; width: 100%; max-width: 580px; box-shadow: 0 4px 24px rgba(0,0,0,0.08); }
+  .logo { display: flex; align-items: center; gap: 12px; margin-bottom: 32px; }
+  .logo-icon { width: 42px; height: 42px; background: #0077b5; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 20px; }
+  h1 { font-size: 22px; color: #1a1a2e; }
+  .subtitle { font-size: 13px; color: #888; margin-top: 2px; }
+  .section { margin-bottom: 20px; }
+  label { display: block; font-size: 13px; font-weight: 600; color: #444; margin-bottom: 6px; }
+  input, textarea { width: 100%; padding: 12px 14px; border: 1.5px solid #e0e0e0; border-radius: 10px; font-size: 14px; outline: none; transition: border 0.2s; font-family: inherit; }
+  input:focus, textarea:focus { border-color: #0077b5; }
+  textarea { resize: vertical; min-height: 80px; }
+  .hint { font-size: 11px; color: #aaa; margin-top: 5px; }
+  .lvl-wrap { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
+  .lvl-label { font-weight: 400 !important; display: flex !important; align-items: center; gap: 6px; cursor: pointer; padding: 6px 12px; border: 1.5px solid #e0e0e0; border-radius: 20px; font-size: 12px !important; color: #555 !important; transition: all 0.2s; }
+  .lvl-label:has(input:checked) { border-color: #0077b5; background: #e8f4fb; color: #0077b5 !important; }
+  .lvl-label input { width: auto !important; padding: 0 !important; border: none !important; margin: 0; }
+  .btn { width: 100%; padding: 14px; background: #0077b5; color: white; border: none; border-radius: 10px; font-size: 15px; font-weight: 600; cursor: pointer; transition: background 0.2s; margin-top: 8px; }
+  .btn:hover { background: #005f8e; }
+  .btn:disabled { background: #aaa; cursor: not-allowed; }
+  .btn-dl { width: 100%; padding: 12px; background: white; color: #0077b5; border: 2px solid #0077b5; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; margin-top: 10px; transition: all 0.2s; display: none; }
+  .btn-dl:hover { background: #e8f4fb; }
+  .status-box { margin-top: 20px; padding: 16px; border-radius: 10px; font-size: 13px; display: none; }
+  .status-box.running { background: #fff8e1; border: 1px solid #ffc107; color: #7a5c00; display: block; }
+  .status-box.success { background: #e8f5e9; border: 1px solid #4caf50; color: #2e7d32; display: block; }
+  .status-box.error   { background: #ffebee; border: 1px solid #f44336; color: #c62828; display: block; }
+  .progress-bar { height: 6px; background: #e0e0e0; border-radius: 3px; overflow: hidden; margin: 10px 0; }
+  .progress-fill { height: 100%; background: #0077b5; border-radius: 3px; width: 0%; transition: width 0.4s; }
+  .log { background: #f8f8f8; border-radius: 8px; padding: 10px 12px; font-family: monospace; font-size: 11px; max-height: 130px; overflow-y: auto; margin-top: 10px; line-height: 1.8; }
+  .log .line-ok   { color: #2e7d32; }
+  .log .line-info { color: #0077b5; }
+  .log .line-err  { color: #c62828; }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="logo">
+    <div class="logo-icon">in</div>
+    <div>
+      <h1>LinkedIn Job Scraper</h1>
+      <div class="subtitle">Today + last 2 days ki fresh jobs</div>
+    </div>
+  </div>
+
+  <div class="section">
+    <label>Job Keywords</label>
+    <textarea id="keywords" placeholder="AI Engineer&#10;Machine Learning Engineer&#10;Data Scientist&#10;MLOps Engineer"></textarea>
+    <div class="hint">Har keyword alag line mein likho</div>
+  </div>
+
+  <div class="section">
+    <label>Experience Level Filter <span style="font-weight:400;color:#aaa">(optional)</span></label>
+    <div class="lvl-wrap">
+      <label class="lvl-label"><input type="checkbox" value="Intern"             class="lvl"> Intern</label>
+      <label class="lvl-label"><input type="checkbox" value="Entry Level"        class="lvl"> Entry Level</label>
+      <label class="lvl-label"><input type="checkbox" value="Mid Level"          class="lvl"> Mid Level</label>
+      <label class="lvl-label"><input type="checkbox" value="Senior"             class="lvl"> Senior</label>
+      <label class="lvl-label"><input type="checkbox" value="Consultant/Manager" class="lvl"> Consultant</label>
+    </div>
+    <div class="hint">Koi select na karo = sab levels aayenge email mein</div>
+  </div>
+
+  <div class="section">
+    <label>Location</label>
+    <input id="location" type="text" value="Pakistan">
+  </div>
+
+  <div class="section">
+    <label>Email Addresses <span style="font-weight:400;color:#aaa">(jinhe mail jaegi)</span></label>
+    <textarea id="emails" placeholder="ali@gmail.com&#10;sara@gmail.com" style="min-height:60px"></textarea>
+    <div class="hint">Har email alag line mein likho</div>
+  </div>
+
+  <button class="btn" id="btn" onclick="startScrape()">Scraping Shuru Karo</button>
+  <button class="btn-dl" id="dl-btn" onclick="downloadCSV()">CSV Download Karo</button>
+
+  <div class="status-box" id="status">
+    <div id="status-text"></div>
+    <div class="progress-bar"><div class="progress-fill" id="pbar"></div></div>
+    <div class="log" id="log"></div>
+  </div>
+
+</div>
+<script>
+function log(msg, type='info') {
+  const el = document.getElementById('log');
+  el.innerHTML += `<div class="line-${type}">> ${msg}</div>`;
+  el.scrollTop = el.scrollHeight;
+}
+
+function setProgress(p) {
+  document.getElementById('pbar').style.width = p + '%';
+}
+
+function downloadCSV() {
+  window.location.href = '/download-csv';
+}
+
+async function startScrape() {
+  const kwRaw    = document.getElementById('keywords').value.trim();
+  const location = document.getElementById('location').value.trim();
+  const emRaw    = document.getElementById('emails').value.trim();
+
+  if (!kwRaw)    { alert('Kam az kam ek keyword daalo!'); return; }
+  if (!location) { alert('Location daalo!'); return; }
+  if (!emRaw)    { alert('Kam az kam ek email daalo!'); return; }
+
+  const keywords = kwRaw.split('\n').map(k => k.trim()).filter(Boolean);
+  const emails   = emRaw.split('\n').map(e => e.trim()).filter(Boolean);
+  const levels   = [...document.querySelectorAll('.lvl:checked')].map(c => c.value);
+
+  const btn    = document.getElementById('btn');
+  const dlBtn  = document.getElementById('dl-btn');
+  const status = document.getElementById('status');
+
+  btn.disabled = true;
+  dlBtn.style.display = 'none';
+  btn.textContent = 'Chal raha hai...';
+  status.className = 'status-box running';
+  document.getElementById('log').innerHTML = '';
+  document.getElementById('status-text').textContent = 'Scraping chal rahi hai — thoda wait karo...';
+  setProgress(5);
+
+  log(`${keywords.length} keyword(s): ${keywords.join(', ')}`);
+  log(`Location: ${location}`);
+  log(`Emails: ${emails.join(', ')}`);
+  if (levels.length > 0) log(`Level filter: ${levels.join(', ')}`);
+  else log('Level filter: sab levels');
+  log('LinkedIn se data nikal raha hai...');
+
+  try {
+    const res = await fetch('/scrape', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ keywords, location, emails, levels })
+    });
+
+    if (!res.ok) throw new Error('Server error: ' + res.status);
+    const data = await res.json();
+
+    log(`Task shuru: ${data.task_id}`, 'info');
+    setProgress(20);
+
+    let pct = 20;
+    const timer = setInterval(() => {
+      pct = Math.min(pct + 3, 88);
+      setProgress(pct);
+    }, 4000);
+
+    setTimeout(() => {
+      clearInterval(timer);
+      setProgress(100);
+      status.className = 'status-box success';
+      document.getElementById('status-text').textContent = 'Sab kaam ho gaya!';
+      log('Jobs database mein save ho gayi!', 'ok');
+      log('Google Sheets update ho gayi!', 'ok');
+      log('Email(s) bhej di gayi!', 'ok');
+      log('CSV download ke liye neeche button dabao!', 'ok');
+      dlBtn.style.display = 'block';
+      btn.disabled = false;
+      btn.textContent = 'Dobara Scrape Karo';
+    }, 200000);
+
+  } catch(err) {
+    status.className = 'status-box error';
+    document.getElementById('status-text').textContent = 'Error: ' + err.message;
+    log(err.message, 'err');
+    btn.disabled = false;
+    btn.textContent = 'Scraping Shuru Karo';
+  }
+}
+</script>
+</body>
+</html> -->
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LinkedIn Job Scraper</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { 
+    font-family: 'Segoe UI', system-ui, sans-serif; 
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); 
+    min-height: 100vh; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+  }
+  .container { 
+    background: white; 
+    border-radius: 16px; 
+    padding: 40px; 
+    width: 100%; 
+    max-width: 620px; 
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1); 
+  }
+  .logo { 
+    display: flex; 
+    align-items: center; 
+    gap: 14px; 
+    margin-bottom: 32px; 
+  }
+  .logo-icon { 
+    width: 48px; 
+    height: 48px; 
+    background: #0077b5; 
+    border-radius: 10px; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    color: white; 
+    font-weight: bold; 
+    font-size: 24px; 
+  }
+  h1 { 
+    font-size: 26px; 
+    color: #1a1a2e; 
+    font-weight: 600; 
+  }
+  .subtitle { 
+    font-size: 14px; 
+    color: #666; 
+    margin-top: 4px; 
+  }
+
+  .section { margin-bottom: 24px; }
+  label { 
+    display: block; 
+    font-size: 14px; 
+    font-weight: 600; 
+    color: #333; 
+    margin-bottom: 8px; 
+  }
+  input, textarea { 
+    width: 100%; 
+    padding: 14px; 
+    border: 2px solid #e0e0e0; 
+    border-radius: 10px; 
+    font-size: 15px; 
+    outline: none; 
+    transition: all 0.3s; 
+  }
+  input:focus, textarea:focus { 
+    border-color: #0077b5; 
+    box-shadow: 0 0 0 3px rgba(0,119,181,0.1); 
+  }
+  textarea { resize: vertical; min-height: 90px; }
+
+  .hint { 
+    font-size: 12.5px; 
+    color: #888; 
+    margin-top: 6px; 
+  }
+
+  .lvl-wrap { 
+    display: flex; 
+    flex-wrap: wrap; 
+    gap: 10px; 
+    margin-top: 8px; 
+  }
+  .lvl-label { 
+    padding: 8px 16px; 
+    border: 2px solid #e0e0e0; 
+    border-radius: 30px; 
+    font-size: 14px; 
+    cursor: pointer; 
+    transition: all 0.2s; 
+  }
+  .lvl-label:hover { background: #f0f7ff; }
+  .lvl-label:has(input:checked) { 
+    border-color: #0077b5; 
+    background: #e3f2fd; 
+    color: #0077b5; 
+    font-weight: 500; 
+  }
+
+  .btn { 
+    width: 100%; 
+    padding: 16px; 
+    background: #0077b5; 
+    color: white; 
+    border: none; 
+    border-radius: 12px; 
+    font-size: 16px; 
+    font-weight: 600; 
+    cursor: pointer; 
+    margin-top: 10px; 
+    transition: all 0.3s; 
+  }
+  .btn:hover { background: #005f8e; }
+  .btn:disabled { background: #aaa; cursor: not-allowed; }
+
+  .btn-dl { 
+    width: 100%; 
+    padding: 14px; 
+    background: white; 
+    color: #0077b5; 
+    border: 2px solid #0077b5; 
+    border-radius: 12px; 
+    font-size: 15px; 
+    font-weight: 600; 
+    cursor: pointer; 
+    margin-top: 12px; 
+  }
+  .btn-dl:hover { background: #f0f7ff; }
+
+  .status-box { 
+    margin-top: 25px; 
+    padding: 18px; 
+    border-radius: 12px; 
+    font-size: 14px; 
+    display: none; 
+  }
+  .status-box.running { background: #fff8e1; border: 1px solid #ffc107; color: #7a5c00; display: block; }
+  .status-box.success { background: #e8f5e9; border: 1px solid #4caf50; color: #2e7d32; display: block; }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="logo">
+    <div class="logo-icon">in</div>
+    <div>
+      <h1>LinkedIn Job Scraper</h1>
+      <div class="subtitle">Fresh Job Alerts • AI & Tech Roles</div>
+    </div>
+  </div>
+
+  <div class="section">
+    <label>Job Keywords</label>
+    <textarea id="keywords" placeholder="Machine Learning Engineer&#10;Data Scientist&#10;AI Engineer"></textarea>
+    <div class="hint">One keyword per line</div>
+  </div>
+
+  <div class="section">
+    <label>Experience Level Filter (Optional)</label>
+    <div class="lvl-wrap">
+      <label class="lvl-label"><input type="checkbox" value="Intern" class="lvl"> Intern</label>
+      <label class="lvl-label"><input type="checkbox" value="Entry Level" class="lvl"> Entry Level</label>
+      <label class="lvl-label"><input type="checkbox" value="Mid Level" class="lvl"> Mid Level</label>
+      <label class="lvl-label"><input type="checkbox" value="Senior" class="lvl"> Senior</label>
+      <label class="lvl-label"><input type="checkbox" value="Consultant/Manager" class="lvl"> Consultant</label>
+    </div>
+    <div class="hint">Leave unselected to get all levels</div>
+  </div>
+
+  <div class="section">
+    <label>Location</label>
+    <input id="location" type="text" value="Pakistan">
+  </div>
+
+  <div class="section">
+    <label>Email Addresses</label>
+    <textarea id="emails" placeholder="your.email@gmail.com&#10;another.email@gmail.com" style="min-height:70px"></textarea>
+    <div class="hint">One email per line</div>
+  </div>
+
+  <button class="btn" id="btn" onclick="startScrape()">Start Scraping</button>
+  <button class="btn-dl" id="dl-btn" onclick="downloadCSV()" style="display:none">Download CSV Report</button>
+
+  <div class="status-box" id="status">
+    <div id="status-text"></div>
+    <div class="progress-bar"><div class="progress-fill" id="pbar"></div></div>
+    <div class="log" id="log"></div>
+  </div>
+
+</div>
+
+<script>
+function log(msg, type='info') {
+  const el = document.getElementById('log');
+  el.innerHTML += `<div style="margin:3px 0">> ${msg}</div>`;
+  el.scrollTop = el.scrollHeight;
+}
+
+function setProgress(p) {
+  document.getElementById('pbar').style.width = p + '%';
+}
+
+function downloadCSV() {
+  window.location.href = '/download-csv';
+}
+
+async function startScrape() {
+  const kwRaw = document.getElementById('keywords').value.trim();
+  const location = document.getElementById('location').value.trim();
+  const emRaw = document.getElementById('emails').value.trim();
+
+  if (!kwRaw) { alert('Please enter at least one keyword'); return; }
+  if (!location) { alert('Please enter location'); return; }
+  if (!emRaw) { alert('Please enter at least one email'); return; }
+
+  const keywords = kwRaw.split('\n').map(k => k.trim()).filter(Boolean);
+  const emails = emRaw.split('\n').map(e => e.trim()).filter(Boolean);
+  const levels = [...document.querySelectorAll('.lvl:checked')].map(c => c.value);
+
+  const btn = document.getElementById('btn');
+  const dlBtn = document.getElementById('dl-btn');
+  const status = document.getElementById('status');
+
+  btn.disabled = true;
+  dlBtn.style.display = 'none';
+  btn.textContent = 'Scraping in Progress...';
+  status.className = 'status-box running';
+  document.getElementById('log').innerHTML = '';
+  document.getElementById('status-text').textContent = 'Connecting to LinkedIn...';
+  setProgress(5);
+
+  try {
+    const res = await fetch('/scrape', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ keywords, location, emails, levels })
+    });
+
+    const data = await res.json();
+
+    log(`Task started: ${data.task_id}`);
+    setProgress(20);
+
+    let pct = 20;
+    const timer = setInterval(() => {
+      pct = Math.min(pct + 4, 92);
+      setProgress(pct);
+    }, 3500);
+
+    setTimeout(() => {
+      clearInterval(timer);
+      setProgress(100);
+      status.className = 'status-box success';
+      document.getElementById('status-text').textContent = 'Scraping Completed Successfully!';
+      log('✅ Jobs saved to database', 'ok');
+      log('✅ Google Sheet updated', 'ok');
+      log('✅ Emails sent', 'ok');
+      dlBtn.style.display = 'block';
+      btn.disabled = false;
+      btn.textContent = 'Start New Scrape';
+    }, 180000);
+
+  } catch(err) {
+    status.className = 'status-box error';
+    document.getElementById('status-text').textContent = 'Error occurred';
+    log('❌ ' + err.message, 'err');
+    btn.disabled = false;
+    btn.textContent = 'Start Scraping';
+  }
+}
+</script>
+</body>
+</html>
