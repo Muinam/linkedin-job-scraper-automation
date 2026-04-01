@@ -22,9 +22,7 @@ Every time you run this system, it:
 ## Tech Stack
 
 | Layer | Technology |
-
 |-------|-----------|
-
 | Browser Automation | Python + Playwright (stealth mode) |
 | HTML Parsing | BeautifulSoup4 + lxml |
 | API Backend | FastAPI + Uvicorn |
